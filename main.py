@@ -8,6 +8,18 @@ def build_and_visualize(length: int):
     return html_path
 
 if __name__ == "__main__":
-    LENGTH = 100
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Generate and visualize a 3D asteroid field maze.")
+    parser.add_argument(
+        "length",
+        nargs="?",
+        type=int,
+        default=100,
+        help="Maze length (Z dimension). Default: 100",
+    )
+    args = parser.parse_args()
+
+    LENGTH = args.length
     html = build_and_visualize(LENGTH)
     print(f"Done. HTML written to: {html}")
