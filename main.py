@@ -1,4 +1,5 @@
 # main.py
+import sys
 import run_and_export
 
 def build_and_visualize(length: int):
@@ -8,18 +9,20 @@ def build_and_visualize(length: int):
     return html_path
 
 if __name__ == "__main__":
-    import argparse
+    # default length
+    length = 100
 
-    parser = argparse.ArgumentParser(description="Generate and visualize a 3D asteroid field maze.")
-    parser.add_argument(
-        "length",
-        nargs="?",
-        type=int,
-        default=100,
-        help="Maze length (Z dimension). Default: 100",
-    )
-    args = parser.parse_args()
+    if len(sys.argv) > 1:
+        arg = sys.argv[1]
+        try:
+            val = int(arg)
+            if 10 <= val <= 1000:
+                length = val
+            else:
+                print(f"Invalid length '{arg}'. Must be an integer between 10 and 1000. Using default {length}.")
+        except ValueError:
+            print(f"Invalid argument '{arg}'. Must be an integer between 10 and 1000. Using default {length}.")
 
-    LENGTH = args.length
-    html = build_and_visualize(LENGTH)
+    print("Creating", "50x50x" + length, "maze...")
+    html = build_and_visualize(length)
     print(f"Done. HTML written to: {html}")
