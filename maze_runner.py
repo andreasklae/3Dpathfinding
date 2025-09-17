@@ -190,7 +190,16 @@ def _generate_spread_maze(length: int, density: float, seed: int) -> np.ndarray:
         for _ in range(clusters_in_band):
             cx0 = int(rng.integers(6, W - 6))
             cy0 = int(rng.integers(6, H - 6))
-            cz0 = int(rng.integers(max(z0b + 2, 1), max(z0b + 2, z1b - 2)))
+            # Safe Z range for narrow bands: prefer (z0b+1, z1b-1), fall back to (z0b, z1b)
+            z_low = max(z0b + 1, 0)
+            z_high = min(z1b - 1, L - 1)
+            if z_high <= z_low:
+                z_low = max(z0b, 0)
+                z_high = min(z1b, L)
+            if z_high <= z_low:
+                cz0 = int(z_low)
+            else:
+                cz0 = int(rng.integers(z_low, z_high))
             band_centers.append((cx0, cy0, cz0))
 
         attempts = 0
@@ -201,12 +210,23 @@ def _generate_spread_maze(length: int, density: float, seed: int) -> np.ndarray:
                 cc = band_centers[int(rng.integers(0, len(band_centers)))]
                 cx = int(np.clip(rng.normal(cc[0], 5), 1, W - 2))
                 cy = int(np.clip(rng.normal(cc[1], 5), 1, H - 2))
-                # tighter around band in Z
-                cz = int(np.clip(rng.normal(cc[2], max(3, band_depth / 6)), z0b + 1, z1b - 1))
+                # tighter around band in Z; clip with safe bounds even for thin bands
+                lo = max(z0b + 1, 0)
+                hi = min(z1b - 1, L - 1)
+                if hi <= lo:
+                    lo = max(z0b, 0)
+                    hi = min(z1b, L - 1)
+                if hi <= lo:
+                    hi = min(lo + 1, L - 1)
+                cz = int(np.clip(rng.normal(cc[2], max(3, band_depth / 6)), lo, hi))
             else:
                 cx = int(rng.integers(1, W - 1))
                 cy = int(rng.integers(1, H - 1))
-                cz = int(rng.integers(z0b + 1, z1b - 1))
+                lo = max(z0b + 1, 0)
+                hi = min(z1b - 1, L - 1)
+                if hi <= lo:
+                    hi = lo + 1
+                cz = int(rng.integers(lo, hi))
 
             rx, ry, rz = _rand_radii()
             delta = _place_ellipsoid((cx, cy, cz), (rx, ry, rz), roughness=0.22, z_limits=(z0b, z1b))
