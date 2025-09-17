@@ -10,5 +10,3 @@ maze_run_*.pkl
 Statistics/algorithm_analysis_plots_*/
 Statistics/**/*.png
 
-# Optional: local outputs directory (uncomment if you use one)
-# out/
