@@ -1,0 +1,14 @@
+# OS / Python
+__pycache__/
+*.pyc
+.DS_Store
+.ipynb_checkpoints/
+
+# Generated visualization and data artifacts
+maze_visual_*.html
+maze_run_*.pkl
+Statistics/algorithm_analysis_plots_*/
+Statistics/**/*.png
+
+# Optional: local outputs directory (uncomment if you use one)
+# out/
